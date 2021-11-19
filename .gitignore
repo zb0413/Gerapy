@@ -18,3 +18,4 @@ db.sqlite3
 install.sh
 *.pyc
 .venv
+venv

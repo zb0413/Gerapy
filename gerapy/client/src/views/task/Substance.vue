@@ -28,6 +28,13 @@
         size="small"
       ></el-input>
     </el-form-item>
+    <el-form-item :label="$lang.columns.args" prop="spider">
+      <el-input
+        v-model="formData.args"
+        :placeholder="$lang.messages.enter + ' ' + $lang.columns.args"
+        size="small"
+      ></el-input>
+    </el-form-item>
     <el-form-item :label="$lang.columns.clients" prop="clients">
       <el-select
         v-model="formData.clients"
@@ -311,7 +318,6 @@ export default {
   name: "Substance",
   props: {
     id: {
-      type: String,
       default: null,
     },
   },

@@ -785,6 +785,7 @@ def task_create(request):
                                    name=data.get('name'),
                                    spider=data.get('spider'),
                                    trigger=data.get('trigger'),
+                                   args=data.get('args'),
                                    configuration=json.dumps(data.get('configuration'), ensure_ascii=False),
                                    modified=1)
         return JsonResponse({'result': '1', 'data': model_to_dict(task)})
@@ -823,7 +824,7 @@ def task_remove(request, task_id):
         clients = clients_of_task(task)
         for client in clients:
             job_id = get_job_id(client, task)
-            DjangoJob.objects.filter(name=job_id).delete()
+            DjangoJob.objects.filter(id=job_id).delete()
         # delete task
         Task.objects.filter(id=task_id).delete()
         return JsonResponse({'result': '1'})
@@ -875,11 +876,11 @@ def task_status(request, task_id):
         clients = clients_of_task(task)
         for client in clients:
             job_id = get_job_id(client, task)
-            jobs = DjangoJob.objects.filter(name=job_id)
+            jobs = DjangoJob.objects.filter(id=job_id)
             logger.debug('jobs from djangojob %s', jobs)
             # if job does not exist, for date mode exceed time
             if not jobs: continue
-            job = DjangoJob.objects.get(name=job_id)
+            job = DjangoJob.objects.get(id=job_id)
             executions = serialize('json', DjangoJobExecution.objects.filter(job=job))
             result.append({
                 'client': model_to_dict(client),

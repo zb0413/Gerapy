@@ -43,6 +43,12 @@
           :label="$lang.columns.spider"
         >
         </el-table-column>
+        <el-table-column
+          align="center"
+          prop="args"
+          :label="$lang.columns.args"
+        >
+        </el-table-column>
         <el-table-column align="center" :label="$lang.columns.operations">
           <template slot-scope="props">
             <router-link

@@ -266,7 +266,8 @@ export default {
     create: '创建',
     upload: '上传',
     clone: '克隆',
-    address: '地址'
+    address: '地址',
+    args: '参数'
   },
 
 }

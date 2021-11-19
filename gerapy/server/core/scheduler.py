@@ -23,7 +23,7 @@ args_map = {
 logger = get_logger(__name__)
 
 
-def execute(client, project_name, spider_name):
+def execute(client, project_name, spider_name, spider_args):
     """
     schedule deployed task
     :param client: client object
@@ -31,11 +31,13 @@ def execute(client, project_name, spider_name):
     :param spider_name: spider name
     :return: None
     """
-    logger.info('execute job of client %s, project %s, spider %s', client.name, project_name, spider_name)
+    logger.info('execute job of client %s, project %s, spider %s, spider args %s', client.name, project_name, spider_name, spider_args)
     # don not add any try except, apscheduler can catch traceback to database
     ip_port = Client.objects.get(id=client.id)
     scrapyd = get_scrapyd(ip_port)
-    scrapyd.schedule(project_name, spider_name)
+    args = dict(json.loads(spider_args))
+
+    scrapyd.schedule(project_name, spider_name, **args)
 
 
 class SchedulerManager(Thread):
@@ -109,7 +111,7 @@ class SchedulerManager(Thread):
         if not task.modified and not force: return
         # check extra jobs which does not belong to task
         existed_jobs = self.existed_jobs()
-        existed_job_ids = list(map(lambda obj: obj.name, existed_jobs))
+        existed_job_ids = list(map(lambda obj: obj.id, existed_jobs))
         realtime_job_ids = list(self.realtime_jobs())
         logger.debug('existed job ids %s, task job ids %s', existed_job_ids, realtime_job_ids)
         deprecated_job_ids = [job_id for job_id in existed_job_ids if not job_id in realtime_job_ids]
@@ -141,7 +143,7 @@ class SchedulerManager(Thread):
             logger.debug('adding or modifying job %s, trigger %s, configuration %s', job_id, trigger,
                          configuration)
             # if job doesn't exist, add it. otherwise replace it
-            self.scheduler.add_job(execute, task.trigger, args=[client, task.project, task.spider], id=job_id,
+            self.scheduler.add_job(execute, task.trigger, args=[client, task.project, task.spider, task.args], id=job_id,
                                    replace_existing=True, **configuration)
     
     def run(self):

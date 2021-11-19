@@ -266,6 +266,7 @@ export default {
     create: 'Create',
     upload: 'Upload',
     clone: 'Clone',
-    address: 'Address'
+    address: 'Address',
+    args: 'Args'
   },
 }
